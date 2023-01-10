@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title></title>
+  <title>Luca's Snake Game</title>
   <style>
   html, body {
     height: 100%;
@@ -45,6 +45,12 @@ var snake = {
   maxCells: 4
 };
 
+var apple = {
+  x: 320,
+  y: 320
+};
+
+// NOT WORKING YET, FIX
 function randomSnakeColor() { 
   var characters = "abcdef1234567890";  
                 
@@ -55,9 +61,12 @@ function randomSnakeColor() {
   //loop until string complete
   for (var i=0; i<lenString; i++) {  
       var rnum = Math.floor(Math.random() * characters.length);  
-      randomstring += characters.substring(rnum, rnum+1);  
+      randomstring += characters.substring(rnum, rnum+1);
   }  
+  return randomstring
 }
+
+var snakeColor = randomSnakeColor()
 
 // loop game
 function loop() {
@@ -83,17 +92,21 @@ function loop() {
     snake.cells.pop();
   }
 
+  // draw apple
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid-1, grid-1)
+
   // draw snake one cell at a time
-  context.fillStyle = "green";
+  context.fillStyle = snakeColor;
   snake.cells.forEach(function(cell, index) {
     
-    // making the snake cells distinguisable
+    // making snake cells separate
     context.fillRect(cell.x, cell.y, grid-1, grid-1);  
 
     // check collision with all cells after this one (modified bubble sort)
     for (var i = index + 1; i < snake.cells.length; i++) {
       
-      // checks if snake has crashed (if so, resent game)
+      // checks if snake has crashed (if so, reset game)
       if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
         snake.x = 160;
         snake.y = 160;
@@ -131,7 +144,7 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// start the game
+// start the game & keeps game running
 requestAnimationFrame(loop);
 </script>
 </body>
