@@ -29,10 +29,10 @@ var context = canvas.getContext('2d');
 
 var grid = 16;
 var count = 0;
-  
+
 var snake = {
   x: 160,
-  y: 160,
+  y: 192,
   
   // snake speed (1 grid/s)
   dx: grid,
@@ -47,7 +47,7 @@ var snake = {
 
 var apple = {
   x: 320,
-  y: 320
+  y: 192
 };
 
 // NOT WORKING YET, FIX
@@ -68,11 +68,32 @@ function randomSnakeColor() {
 
 var snakeColor = randomSnakeColor()
 
-// loop game
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+var highestScore = 0
+var highestName = "NONE"
+var higherScore = 0
+var higherName = "NONE"
+var highScore = 0
+var highName = "NONE"
+var okScore = 0
+var okName = "NONE"
+var mehScore = 0
+var mehName = "NONE"
+
+PlaySound = function (file) {
+  var audio = new Audio(file);
+  audio.loop = false;
+  audio.play();
+}
+
+// game loop
 function loop() {
   requestAnimationFrame(loop);
 
-  // slower game speed
+  // slow game down
   if (++count < 4) {
     return;
   }
@@ -80,42 +101,178 @@ function loop() {
   count = 0;
   context.clearRect(0,0,canvas.width,canvas.height);
 
-  // move snake
+  // move snake using speed
   snake.x += snake.dx;
   snake.y += snake.dy;
 
-  // tracks snake location
+  // finds out where snake is
   snake.cells.unshift({x: snake.x, y: snake.y});
 
-  // moving tail (by taking it away)
+  // remove end cells as snake moves
   if (snake.cells.length > snake.maxCells) {
     snake.cells.pop();
   }
 
   // draw apple
   context.fillStyle = 'red';
-  context.fillRect(apple.x, apple.y, grid-1, grid-1)
+  context.fillRect(apple.x, apple.y, grid-1, grid-1);
 
   // draw snake one cell at a time
   context.fillStyle = snakeColor;
   snake.cells.forEach(function(cell, index) {
     
-    // making snake cells separate
-    context.fillRect(cell.x, cell.y, grid-1, grid-1);  
+  // making the snake slightly smaller
+  context.fillRect(cell.x, cell.y, grid-1, grid-1);  
 
-    // check collision with all cells after this one (modified bubble sort)
-    for (var i = index + 1; i < snake.cells.length; i++) {
-      
-      // checks if snake has crashed (if so, reset game)
-      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-        snake.x = 160;
-        snake.y = 160;
-        snake.cells = [];
-        snake.maxCells = 4;
-        snake.dx = grid;
-        snake.dy = 0;
+  // snake ate apple
+  if (cell.x === apple.x && cell.y === apple.y) {
+    snake.maxCells++;
+
+      // Make apple go somewhere random within grid
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+  }
+
+  currentScore = snake.maxCells * 100
+
+  // check all cells (modified bubble sort)
+  for (var i = index + 1; i < snake.cells.length; i++) {
+    
+    // snake collides with itself (game over, reset)
+    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+      // If in top 5, add name
+      if (currentScore >= highestScore) {
+        mehName = okName;
+        okName = highName;
+        highName = higherName;
+        higherName = highestName;
+        highestName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = higherScore;
+        higherScore = highestScore;
+        highestScore = currentScore;
       }
+      // If in top 5, add name
+      else if (currentScore >= higherScore) {
+        mehName = okName;
+        okName = highName;
+        highName = higherName;
+        higherName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = higherScore;
+        higherScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= highScore) {
+        mehName = okName;
+        okName = highName;
+        highName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= okScore) {
+        mehName = okName;
+        okName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= mehScore) {
+        mehName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = currentScore;
+      }
+      snake.x = 160;
+      snake.y = 192;
+      snake.cells = [];
+      snake.maxCells = 4;
+      snake.dx = grid;
+      snake.dy = 0;
+      snakeColor = randomSnakeColor();
+
+      apple.x = 320;
+      apple.y = 192;
+      var scoreboard = String("SCOREBOARD! \n1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
+      
+      fs.writeFile("Scores.txt", scoreboard, err => {
+        if(err){
+          console.err
+          return
+        }
+      })
+
     }
+
+    else if ((snake.cells[i].x >= 400) || (snake.cells[i].x <= 0) || (snake.cells[i].y >= 400) || (snake.cells[i].y <= 0)) {
+      // If in top 5, add name
+      if (currentScore >= highestScore) {
+        mehName = okName;
+        okName = highName;
+        highName = higherName;
+        higherName = highestName;
+        highestName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = higherScore;
+        higherScore = highestScore;
+        highestScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= higherScore) {
+        mehName = okName;
+        okName = highName;
+        highName = higherName;
+        higherName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = higherScore;
+        higherScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= highScore) {
+        mehName = okName;
+        okName = highName;
+        highName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = highScore;
+        highScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= okScore) {
+        mehName = okName;
+        okName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = okScore;
+        okScore = currentScore;
+      }
+      // If in top 5, add name
+      else if (currentScore >= mehScore) {
+        mehName = prompt("Congratulations! You have a top 5 score! What is your name?")
+        mehScore = currentScore;
+      }
+      snake.x = 160;
+      snake.y = 192;
+      snake.cells = [];
+      snake.maxCells = 4;
+      snake.dx = grid;
+      snake.dy = 0;
+      snakeColor = randomSnakeColor();
+
+      apple.x = 320;
+      apple.y = 192;
+      var scoreboard = String("SCOREBOARD! \n1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
+      
+      fs.writeFile("Scores.txt", scoreboard, err => {
+        if(err){
+          console.err
+          return
+        }
+      })
+
+    }
+  }
   });
 }
 
@@ -142,6 +299,7 @@ document.addEventListener('keydown', function(e) {
     snake.dy = grid;
     snake.dx = 0;
   }
+
 });
 
 // start the game & keeps game running
