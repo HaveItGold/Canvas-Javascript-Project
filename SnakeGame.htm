@@ -50,7 +50,7 @@ var apple = {
   y: 192
 };
 
-// NOT WORKING YET, FIX
+// chooses random 6-digit hex to be snake's color
 function randomSnakeColor() { 
   var characters = "abcdef1234567890";  
                 
@@ -83,10 +83,10 @@ var okName = "NONE"
 var mehScore = 0
 var mehName = "NONE"
 
-PlaySound = function (file) {
+playSound = function(file) {
   var audio = new Audio(file);
   audio.loop = false;
-  audio.play();
+  audio.play(); 
 }
 
 // game loop
@@ -192,17 +192,10 @@ function loop() {
       snake.dx = grid;
       snake.dy = 0;
       snakeColor = randomSnakeColor();
-
       apple.x = 320;
       apple.y = 192;
-      var scoreboard = String("SCOREBOARD! \n1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
-      
-      fs.writeFile("Scores.txt", scoreboard, err => {
-        if(err){
-          console.err
-          return
-        }
-      })
+      var scoreboard = String("SCOREBOARD! \n 1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
+      console.log(scoreboard)
 
     }
 
@@ -259,17 +252,10 @@ function loop() {
       snake.dx = grid;
       snake.dy = 0;
       snakeColor = randomSnakeColor();
-
       apple.x = 320;
       apple.y = 192;
-      var scoreboard = String("SCOREBOARD! \n1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
-      
-      fs.writeFile("Scores.txt", scoreboard, err => {
-        if(err){
-          console.err
-          return
-        }
-      })
+      var scoreboard = String("SCOREBOARD! \n 1) Score: " + highestScore + " ||| Set By:" + highestName + "\n 2) Score: " + higherScore + " ||| Set By:" + higherName + "\n 3) Score: " + highScore + " ||| Set By:" + highName + "\n 4) Score: " + okScore + " ||| Set By:" + okName + "\n 5) Score: " + mehScore + " ||| Set By:" + mehName)
+      console.log(scoreboard)
 
     }
   }
@@ -281,21 +267,25 @@ document.addEventListener('keydown', function(e) {
   
   // left arrow
   if (e.which === 37 && snake.dx === 0) {
+    playSound("Left.mp3");
     snake.dx = -grid;
     snake.dy = 0;
   }
   // up arrow
   else if (e.which === 38 && snake.dy === 0) {
+    playSound("Up.mp3");
     snake.dy = -grid;
     snake.dx = 0;
   }
   // right arrow
   else if (e.which === 39 && snake.dx === 0) {
+    playSound("Right.mp3");
     snake.dx = grid;
     snake.dy = 0;
   }
   // down arrow
   else if (e.which === 40 && snake.dy === 0) {
+    playSound("Down.mp3");
     snake.dy = grid;
     snake.dx = 0;
   }
